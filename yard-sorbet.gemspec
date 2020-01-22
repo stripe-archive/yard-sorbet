@@ -11,8 +11,8 @@ Gem::Specification.new do |spec|
   spec.description = <<~DESC
     A YARD plugin that incorporates Sorbet type information
   DESC
-  spec.email = 'dduugg@gmail.com'
-  spec.homepage = 'https://github.com/dduugg/yard-sorbet'
+  spec.email = 'dug@stripe.com'
+  spec.homepage = 'https://github.com/stripe/yard-sorbet'
   spec.license = 'Apache-2.0'
   spec.add_development_dependency 'codecov', '~> 0.1.16'
   spec.add_development_dependency 'rake', '~> 13.0'
