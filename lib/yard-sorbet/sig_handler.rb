@@ -10,37 +10,48 @@ class YARDSorbet::SigHandler < YARD::Handlers::Ruby::Base
     # Find the list of declarations inside the class
     class_def = statement.children.find { |c| c.type == :list }
     class_contents = class_def.children
-
     class_contents.each_with_index do |child, i|
-      next unless type_signature?(child)
-
-      next_statement = class_contents[i + 1]
-      if %i[def defs command].include?(next_statement&.type) && !next_statement.docstring
-        # Swap the method definition docstring and the sig docstring.
-        # Parse relevant parts of the `sig` and include them as well.
-        parser = YARD::DocstringParser.new.parse(child.docstring)
-        # Directives are already parsed at this point, and there doesn't
-        # seem to be an API to tweeze them from one node to another without
-        # managing YARD internal state. Instead, we just extract them from
-        # the raw text and re-attach them.
-        directives = parser.raw_text&.split("\n")&.select do |line|
-          line.start_with?('@!')
-        end || []
-        docstring = parser.to_docstring
-        parsed_sig = parse_sig(child)
-        enhance_tag(docstring, :abstract, parsed_sig)
-        enhance_tag(docstring, :return, parsed_sig)
-        if next_statement.type != :command
-          parsed_sig[:params]&.each do |name, types|
-            enhance_param(docstring, name, types)
-          end
+      if child.type == :sclass && child.children.size == 2
+        singleton_class_contents = child.children[1]
+        singleton_class_contents.each_with_index do |child, j|
+          handle_class_contents(singleton_class_contents, j)
         end
-        next_statement.docstring = docstring.to_raw
-        directives.each do |directive|
-          next_statement.docstring.concat("\n#{directive}")
-        end
-        child.docstring = nil
       end
+
+      handle_class_contents(class_contents, i)
+    end
+  end
+
+  private def handle_class_contents(class_contents, i)
+    child = class_contents[i]
+    return unless type_signature?(child)
+
+    next_statement = class_contents[i + 1]
+    if %i[def defs command].include?(next_statement&.type) && !next_statement.docstring
+      # Swap the method definition docstring and the sig docstring.
+      # Parse relevant parts of the `sig` and include them as well.
+      parser = YARD::DocstringParser.new.parse(child.docstring)
+      # Directives are already parsed at this point, and there doesn't
+      # seem to be an API to tweeze them from one node to another without
+      # managing YARD internal state. Instead, we just extract them from
+      # the raw text and re-attach them.
+      directives = parser.raw_text&.split("\n")&.select do |line|
+        line.start_with?('@!')
+      end || []
+      docstring = parser.to_docstring
+      parsed_sig = parse_sig(child)
+      enhance_tag(docstring, :abstract, parsed_sig)
+      enhance_tag(docstring, :return, parsed_sig)
+      if next_statement.type != :command
+        parsed_sig[:params]&.each do |name, types|
+          enhance_param(docstring, name, types)
+        end
+      end
+      next_statement.docstring = docstring.to_raw
+      directives.each do |directive|
+        next_statement.docstring.concat("\n#{directive}")
+      end
+      child.docstring = nil
     end
   end
 

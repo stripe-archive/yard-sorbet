@@ -73,7 +73,6 @@ RSpec.describe YARDSorbet::SigHandler do
     end
 
     it 'handles singleton class syntax' do
-      skip('TODO')
       node = YARD::Registry.at('Signatures.reopening')
       expect(node.docstring).to eq('comment reopening')
     end
