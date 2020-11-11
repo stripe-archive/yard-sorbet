@@ -11,7 +11,7 @@ class YARDSorbet::SigHandler < YARD::Handlers::Ruby::Base
     class_def = statement.children.find { |c| c.type == :list }
     class_contents = class_def.children
     class_contents.each_with_index do |child, i|
-      if child.type == :sclass && child.children.size == 2
+      if child.type == :sclass && child.children.size == 2 && child.children[1].type == :list
         singleton_class_contents = child.children[1]
         singleton_class_contents.each_with_index do |child, j|
           handle_class_contents(singleton_class_contents, j)
