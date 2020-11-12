@@ -24,6 +24,7 @@ class YARDSorbet::SigHandler < YARD::Handlers::Ruby::Base
 
       next_statement = class_contents[i + 1]
       next unless processable_method?(next_statement)
+
       process_method_definition(next_statement, child)
     end
   end
