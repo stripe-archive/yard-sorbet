@@ -79,7 +79,7 @@ module YARDSorbet::SigToYARD
         [node.source]
       end
     when :top_const_ref
-      # Node from a user defined type with a double colon, ::Klass
+      # A top-level constant reference, such as ::Klass
       # It contains a child node of type :const
       convert(children.first)
     when :const
