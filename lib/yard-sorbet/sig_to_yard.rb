@@ -78,6 +78,12 @@ module YARDSorbet::SigToYARD
       else
         [node.source]
       end
+    when :top_const_ref
+      # Node from a user defined type with a double colon, ::Klass
+      # It contains a child node of type :const
+      convert(children.first)
+    when :const
+      [node.source]
     else
       log.warn("Unsupported sig #{node.type} node #{node.source}")
       [node.source]
