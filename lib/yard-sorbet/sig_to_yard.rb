@@ -56,7 +56,7 @@ module YARDSorbet::SigToYARD
       else
         [node.source]
       end
-    when :const_path_ref
+    when :const_path_ref, :const
       [node.source]
     when :hash, :list
       # Fixed hashes as return values are unsupported:
@@ -82,8 +82,6 @@ module YARDSorbet::SigToYARD
       # A top-level constant reference, such as ::Klass
       # It contains a child node of type :const
       convert(children.first)
-    when :const
-      [node.source]
     else
       log.warn("Unsupported sig #{node.type} node #{node.source}")
       [node.source]
